@@ -52,7 +52,7 @@ type (
 	}
 )
 
-func mkdir(ctx *ctx.ProjectContext, proto parser.Proto) (DirContext, error) {
+func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output string) (DirContext, error) {
 	inner := make(map[string]Dir)
 	etcDir := filepath.Join(ctx.WorkDir, "etc")
 	internalDir := filepath.Join(ctx.WorkDir, "internal")
@@ -66,6 +66,11 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto) (DirContext, error) {
 	if strings.ToLower(proto.Service.Name) == strings.ToLower(proto.GoPackage) {
 		callDir = filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name+"_client").ToCamel()))
 	}
+
+	if output != "" {
+		pbDir = output
+	}
+
 
 	inner[wd] = Dir{
 		Filename: ctx.WorkDir,

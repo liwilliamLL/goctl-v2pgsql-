@@ -371,6 +371,10 @@ var (
 							Name:  "style",
 							Usage: "the file naming format, see [https://github.com/tal-tech/go-zero/tree/master/tools/goctl/config/readme.md]",
 						},
+						cli.StringFlag{
+							Name:  "output, O",
+							Usage: "the file naming format, see [https://github.com/tal-tech/go-zero/tree/master/tools/goctl/config/readme.md]",
+						},
 						cli.BoolFlag{
 							Name:  "idea",
 							Usage: "whether the command execution environment is from idea plugin. [optional]",

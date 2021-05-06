@@ -21,6 +21,7 @@ type Config struct {
 	// of each operating system file name.
 	// Note: NamingFormat is based on snake or camel string
 	NamingFormat string `yaml:"namingFormat"`
+	Output string `yaml:"output"`
 }
 
 // NewConfig creates an instance for Config
