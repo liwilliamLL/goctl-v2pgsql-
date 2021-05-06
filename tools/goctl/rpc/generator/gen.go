@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"log"
 	"path/filepath"
 
 	conf "github.com/tal-tech/go-zero/tools/goctl/config"
@@ -70,41 +71,58 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string) er
 
 	err = g.g.GenEtc(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenEtc")
 		return err
 	}
 
 	err = g.g.GenPb(dirCtx, protoImportPath, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenPb")
 		return err
 	}
 
 	err = g.g.GenConfig(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenConfig")
 		return err
 	}
 
 	err = g.g.GenSvc(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenSvc")
+
 		return err
 	}
 
 	err = g.g.GenLogic(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenLogic")
 		return err
 	}
 
 	err = g.g.GenServer(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenServer")
 		return err
 	}
 
 	err = g.g.GenMain(dirCtx, proto, g.cfg)
 	if err != nil {
+		log.Println("err if GenMain")
 		return err
 	}
 
 	err = g.g.GenCall(dirCtx, proto, g.cfg)
+	if err != nil {
+		log.Println("err if GenCall")
+		return err
+	}
 
+	err = g.g.GenHttp(dirCtx,proto,g.cfg)
+	if err!=nil{
+		log.Println("err if GenHttp")
+		return err
+	}
 	console.NewColorConsole().MarkDone()
 
 	return err

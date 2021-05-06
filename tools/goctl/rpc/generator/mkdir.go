@@ -16,6 +16,7 @@ const (
 	internal = "internal"
 	config   = "config"
 	logic    = "logic"
+	//http     = "http"
 	server   = "server"
 	svc      = "svc"
 	pb       = "pb"
@@ -30,6 +31,7 @@ type (
 		GetInternal() Dir
 		GetConfig() Dir
 		GetLogic() Dir
+		//GetHttp() Dir
 		GetServer() Dir
 		GetSvc() Dir
 		GetPb() Dir
@@ -56,6 +58,7 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto) (DirContext, error) {
 	internalDir := filepath.Join(ctx.WorkDir, "internal")
 	configDir := filepath.Join(internalDir, "config")
 	logicDir := filepath.Join(internalDir, "logic")
+	//httpDir  := filepath.Join(internalDir,"http")
 	serverDir := filepath.Join(internalDir, "server")
 	svcDir := filepath.Join(internalDir, "svc")
 	pbDir := filepath.Join(ctx.WorkDir, proto.GoPackage)
@@ -89,6 +92,11 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto) (DirContext, error) {
 		Package:  filepath.ToSlash(filepath.Join(ctx.Path, strings.TrimPrefix(logicDir, ctx.Dir))),
 		Base:     filepath.Base(logicDir),
 	}
+	//inner[http] = Dir{
+	//	Filename: httpDir,
+	//	Package:  filepath.ToSlash(filepath.Join(ctx.Path, strings.TrimPrefix(httpDir, ctx.Dir))),
+	//	Base:     filepath.Base(httpDir),
+	//}
 	inner[server] = Dir{
 		Filename: serverDir,
 		Package:  filepath.ToSlash(filepath.Join(ctx.Path, strings.TrimPrefix(serverDir, ctx.Dir))),
@@ -141,6 +149,11 @@ func (d *defaultDirContext) GetConfig() Dir {
 func (d *defaultDirContext) GetLogic() Dir {
 	return d.inner[logic]
 }
+
+//func (d *defaultDirContext) GetHttp() Dir{
+//	return d.inner[http]
+//}
+
 
 func (d *defaultDirContext) GetServer() Dir {
 	return d.inner[server]

@@ -16,4 +16,5 @@ type Generator interface {
 	GenServer(ctx DirContext, proto parser.Proto, cfg *conf.Config) error
 	GenSvc(ctx DirContext, proto parser.Proto, cfg *conf.Config) error
 	GenPb(ctx DirContext, protoImportPath []string, proto parser.Proto, cfg *conf.Config) error
+	GenHttp(ctx DirContext, proto parser.Proto, cfg *conf.Config) error
 }
