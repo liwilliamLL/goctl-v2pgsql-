@@ -373,7 +373,11 @@ var (
 						},
 						cli.StringFlag{
 							Name:  "output, O",
-							Usage: "the file naming format, see [https://github.com/tal-tech/go-zero/tree/master/tools/goctl/config/readme.md]",
+							Usage: "output protobuf path. [optional]",
+						},
+						cli.StringFlag{
+							Name:  "callo, C",
+							Usage: "output call client path. [optional]",
 						},
 						cli.BoolFlag{
 							Name:  "idea",

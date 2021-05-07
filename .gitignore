@@ -20,3 +20,8 @@
 # vim auto backup file
 *~
 !OWNERS
+
+**/output
+**/proto
+**/client
+**/pbXX

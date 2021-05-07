@@ -17,10 +17,10 @@ const (
 	config   = "config"
 	logic    = "logic"
 	//http     = "http"
-	server   = "server"
-	svc      = "svc"
-	pb       = "pb"
-	call     = "call"
+	server = "server"
+	svc    = "svc"
+	pb     = "pb"
+	call   = "call"
 )
 
 type (
@@ -52,7 +52,7 @@ type (
 	}
 )
 
-func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output string) (DirContext, error) {
+func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output, callo string) (DirContext, error) {
 	inner := make(map[string]Dir)
 	etcDir := filepath.Join(ctx.WorkDir, "etc")
 	internalDir := filepath.Join(ctx.WorkDir, "internal")
@@ -64,13 +64,16 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output string) (DirConte
 	pbDir := filepath.Join(ctx.WorkDir, proto.GoPackage)
 	callDir := filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name).ToCamel()))
 	if strings.ToLower(proto.Service.Name) == strings.ToLower(proto.GoPackage) {
-		callDir = filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name+"_client").ToCamel()))
+		callDir = filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name + "_client").ToCamel()))
 	}
 
 	if output != "" {
 		pbDir = output
 	}
 
+	if callo != "" {
+		callDir = callo
+	}
 
 	inner[wd] = Dir{
 		Filename: ctx.WorkDir,
@@ -158,7 +161,6 @@ func (d *defaultDirContext) GetLogic() Dir {
 //func (d *defaultDirContext) GetHttp() Dir{
 //	return d.inner[http]
 //}
-
 
 func (d *defaultDirContext) GetServer() Dir {
 	return d.inner[server]
