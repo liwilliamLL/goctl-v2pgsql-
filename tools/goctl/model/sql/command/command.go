@@ -2,6 +2,7 @@ package command
 
 import (
 	"errors"
+	"github.com/tal-tech/go-zero/tools/goctl/model/sql/parser"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -20,6 +21,7 @@ import (
 const (
 	flagSrc   = "src"
 	flagDir   = "dir"
+	flagOption = "o"
 	flagCache = "cache"
 	flagIdea  = "idea"
 	flagURL   = "url"
@@ -48,6 +50,7 @@ func MysqlDDL(ctx *cli.Context) error {
 func MyDataSource(ctx *cli.Context) error {
 	url := strings.TrimSpace(ctx.String(flagURL))
 	dir := strings.TrimSpace(ctx.String(flagDir))
+	option := strings.TrimSpace(ctx.String(flagOption))
 	cache := ctx.Bool(flagCache)
 	idea := ctx.Bool(flagIdea)
 	style := ctx.String(flagStyle)
@@ -57,7 +60,7 @@ func MyDataSource(ctx *cli.Context) error {
 		return err
 	}
 
-	return fromDataSource(url, pattern, dir, cfg, cache, idea)
+	return fromDataSource(url, pattern, dir,option, cfg, cache, idea)
 }
 
 func fromDDl(src, dir string, cfg *config.Config, cache, idea bool) error {
@@ -94,7 +97,7 @@ func fromDDl(src, dir string, cfg *config.Config, cache, idea bool) error {
 	return generator.StartFromDDL(strings.Join(source, "\n"), cache)
 }
 
-func fromDataSource(url, pattern, dir string, cfg *config.Config, cache, idea bool) error {
+func fromDataSource(url, pattern, dir,option string, cfg *config.Config, cache, idea bool) error {
 	log := console.NewConsole(idea)
 	if len(url) == 0 {
 		log.Error("%v", "expected data source of mysql, but nothing found")
@@ -142,8 +145,15 @@ func fromDataSource(url, pattern, dir string, cfg *config.Config, cache, idea bo
 			return err
 		}
 
-
+		//println(option)
 		matchTables[item] = table
+		for _,k:=range matchTables {
+			table, err := parser.ConvertDataType(k)
+			if err != nil {
+				return err
+			}
+			println(table.Name.ToCamel())
+		}
 	}
 
 	if len(matchTables) == 0 {
@@ -154,6 +164,10 @@ func fromDataSource(url, pattern, dir string, cfg *config.Config, cache, idea bo
 	if err != nil {
 		return err
 	}
-
+	gens ,err := gen.NewDefaultGenerator(option,cfg,gen.WithConsoleOption(log))
+	if err != nil {
+		return err
+	}
+	err = gens.GenFactory(option,matchTables)
 	return generator.StartFromInformationSchema(matchTables, cache)
 }

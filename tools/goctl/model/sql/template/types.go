@@ -17,3 +17,25 @@ type (
 	}
 )
 `
+
+
+var FactoryTypes = `
+type (
+	{{.upperStartCamelObject}} struct {
+		{{.fields}}
+	}
+)
+`
+
+
+var FactoryFunc = `
+func New{{.upperStartCamelObject}}(config *mysql.Config) *{{.upperStartCamelObject}} {
+	dataSource,err := mysql.NewDataSource(config)
+	if err !=nil{
+		panic(err)
+	}
+	return &{{.upperStartCamelObject}}{
+		{{.fields}}
+	}
+}
+`

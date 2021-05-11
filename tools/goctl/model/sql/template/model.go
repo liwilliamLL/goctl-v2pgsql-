@@ -12,3 +12,10 @@ var Model = `package {{.pkg}}
 {{.delete}}
 {{.extraMethod}}
 `
+
+
+var Factory = `package {{.pkg}}
+{{.imports}}
+{{.types}}
+{{.func}}
+`

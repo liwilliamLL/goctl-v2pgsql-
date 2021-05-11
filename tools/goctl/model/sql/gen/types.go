@@ -1,6 +1,8 @@
 package gen
 
 import (
+	"fmt"
+	"github.com/tal-tech/go-zero/tools/goctl/model/sql/model"
 	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
@@ -30,4 +32,46 @@ func genTypes(table Table, methods string, withCache bool) (string, error) {
 	}
 
 	return output.String(), nil
+}
+
+
+func genFactoryTypes(pkg string, table map[string]*model.Table)(string ,error){
+	//for _,k:=range table {
+	//	tables, err := parser.ConvertDataType(k)
+	//	if err != nil {
+	//		return "", err
+	//	}
+	//}
+
+	fieldsString, err := genFactoryFields(table)
+	if err != nil {
+		return "", err
+	}
+
+	text, err := util.LoadTemplate(Factory, factoryTypesFile, template.FactoryTypes)
+	if err != nil {
+		return "", err
+	}
+
+	output, err := util.With("types").
+		Parse(text).
+		Execute(map[string]interface{}{
+		    //"upperStartCamelObject": table.Name.ToCamel(),
+			//"upperStartModelObject": table.Name.ToCamel(),
+			"upperStartCamelObject": fmt.Sprintf("%s%s",UpdateUpper(pkg),"Dao"),
+			"fields":                fieldsString,
+		})
+	if err != nil {
+		return "", err
+	}
+
+	return output.String(), nil
+}
+
+func UpdateUpper(a string) string{
+	vv := []rune(a)
+	if len(vv)!=0&&vv[0] >= 97&&vv[0]<=132{
+		vv[0]=vv[0]-32
+	}
+	return string(vv)
 }

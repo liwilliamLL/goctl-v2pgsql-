@@ -17,6 +17,7 @@ func genNew(table Table, withCache bool) (string, error) {
 			"table":                 wrapWithRawString(table.Name.Source()),
 			"withCache":             withCache,
 			"upperStartCamelObject": table.Name.ToCamel(),
+			"originTable":           table.Name.Source(),
 		})
 	if err != nil {
 		return "", err

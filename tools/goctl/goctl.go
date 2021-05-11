@@ -420,6 +420,10 @@ var (
 									Name:  "idea",
 									Usage: "for idea plugin [optional]",
 								},
+								cli.StringFlag{
+									Name:  "o",
+									Usage: "设置父路径",
+								},
 							},
 							Action: model.MysqlDDL,
 						},
@@ -450,6 +454,10 @@ var (
 								cli.BoolFlag{
 									Name:  "idea",
 									Usage: "for idea plugin [optional]",
+								},
+								cli.StringFlag{
+									Name:  "o",
+									Usage: "设置父路径",
 								},
 							},
 							Action: model.MyDataSource,

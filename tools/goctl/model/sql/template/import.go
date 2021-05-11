@@ -15,4 +15,11 @@ var (
 	"time"
 )
 `
+	FactoryImport =`import (
+	"erp-server/lib/provider/mysql"
+	"erp-server/src/dao/{{.pkg}}/model"
+)
+`
+
+
 )

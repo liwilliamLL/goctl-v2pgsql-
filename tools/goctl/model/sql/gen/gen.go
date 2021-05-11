@@ -114,6 +114,7 @@ func (g *defaultGenerator) StartFromInformationSchema(tables map[string]*model.T
 		}
 
 		m[table.Name.Source()] = code
+
 	}
 
 	return g.createFile(m)
@@ -121,12 +122,14 @@ func (g *defaultGenerator) StartFromInformationSchema(tables map[string]*model.T
 
 func (g *defaultGenerator) createFile(modelList map[string]string) error {
 	dirAbs, err := filepath.Abs(g.dir)
+	//log.Println(g.dir,dirAbs,)
 	if err != nil {
 		return err
 	}
 
 	g.dir = dirAbs
 	g.pkg = filepath.Base(dirAbs)
+	//log.Println(g.pkg)
 	err = util.MkdirIfNotExist(dirAbs)
 	if err != nil {
 		return err
@@ -174,6 +177,70 @@ func (g *defaultGenerator) createFile(modelList map[string]string) error {
 	return nil
 }
 
+
+
+func (g *defaultGenerator) CreateFactory(model string) error {
+	dirAbs, err := filepath.Abs(g.dir)
+	//log.Println(g.dir,dirAbs,)
+	if err != nil {
+		log.Println("Abs err",err)
+		return err
+	}
+
+	g.dir = dirAbs
+	g.pkg = filepath.Base(dirAbs)
+	//log.Println(g.pkg)
+	err = util.MkdirIfNotExist(dirAbs)
+	if err != nil {
+		log.Println("MkdirIfNotExist err",err)
+		return err
+	}
+
+	//for tableName, code := range modelList {
+		//tn := stringx.From(tableName)
+		modelFilename, err := format.FileNamingFormat(g.cfg.NamingFormat, "factory")
+		if err != nil {
+			log.Println("FileNamingFormat err",err)
+			return err
+		}
+
+		name := modelFilename + ".go"
+		filename := filepath.Join(dirAbs, name)
+		//if util.FileExists(filename) {
+		//	g.Warning("%s already exists, ignored.", name)
+		//	continue
+		//}
+		err = ioutil.WriteFile(filename, []byte(model), os.ModePerm)
+		if err != nil {
+			return err
+		}
+	//}
+
+	// generate error file
+	//varFilename, err := format.FileNamingFormat(g.cfg.NamingFormat, "vars")
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//filename := filepath.Join(dirAbs, varFilename+".go")
+	//text, err := util.LoadTemplate(category, errTemplateFile, template.Error)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = util.With("vars").Parse(text).SaveTo(map[string]interface{}{
+	//	"pkg": g.pkg,
+	//}, filename, false)
+	//if err != nil {
+	//	return err
+	//}
+
+	g.Success("Done.")
+	return nil
+}
+
+
+
 // ret1: key-table name,value-code
 func (g *defaultGenerator) genFromDDL(source string, withCache bool) (map[string]string, error) {
 	ddlList := g.split(source)
@@ -201,6 +268,46 @@ type Table struct {
 	PrimaryCacheKey        Key
 	UniqueCacheKey         []Key
 	ContainsUniqueCacheKey bool
+}
+
+func (g *defaultGenerator)GenFactory(option string,table map[string]*model.Table)(error){
+	dirAbs, err := filepath.Abs(g.dir)
+	if err != nil {
+		return  err
+	}
+
+	g.dir = dirAbs
+	g.pkg = filepath.Base(dirAbs)
+
+	//log.Println(g.pkg)
+
+
+	importsCode, err := genFactoryImport(g.pkg)
+	if err != nil {
+		log.Println("genImports err",err)
+		return  err
+	}
+
+
+	typesCode, err := genFactoryTypes(g.pkg , table)
+	if err != nil {
+		log.Println("genTypes err",err)
+		return  err
+	}
+
+
+	funcCode, err := genFactoryFunc(g.pkg,table)
+	if err != nil {
+		log.Println("genFactoryFunc err",err)
+		return  err
+	}
+	err = g.executeFactory(importsCode,typesCode,funcCode)
+	if err != nil {
+		log.Println("executeFactory err",err)
+		return  err
+	}
+
+	return err
 }
 
 func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, error) {
@@ -320,6 +427,32 @@ func (g *defaultGenerator) executeModel(code *code) (*bytes.Buffer, error) {
 		return nil, err
 	}
 	return output, nil
+}
+
+
+func (g *defaultGenerator)executeFactory(importsCode,typesCode,funcCode string)( error) {
+	text, err := util.LoadTemplate(Factory, factoryFile, template.Factory)
+	if err != nil {
+		log.Println("LoadTemplate err",err)
+		return  err
+	}
+	log.Println(importsCode,typesCode,funcCode)
+	t := util.With("factory").
+		Parse(text).
+		GoFmt(true)
+	output, err := t.Execute(map[string]interface{}{
+		"pkg":         g.pkg,
+		"imports":     importsCode,
+		"types":       typesCode,
+		"func":      funcCode,
+	})
+	log.Println(output)
+	if err != nil {
+		log.Println("Execute err",err)
+		return  err
+	}
+	err = g.CreateFactory(output.String())
+	return err
 }
 
 func wrapWithRawString(v string) string {

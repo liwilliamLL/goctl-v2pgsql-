@@ -1,6 +1,8 @@
 package gen
 
 import (
+	"fmt"
+	"github.com/tal-tech/go-zero/tools/goctl/model/sql/model"
 	"strings"
 
 	"github.com/tal-tech/go-zero/core/collection"
@@ -72,3 +74,33 @@ func genInsert(table Table, withCache bool) (string, string, error) {
 
 	return output.String(), insertMethodOutput.String(), nil
 }
+
+
+
+
+func genFactoryFunc(pkg string, table map[string]*model.Table)(string ,error){
+	fieldsString, err := genFactoryFuncFields(table)
+	if err != nil {
+		return "", err
+	}
+
+	text, err := util.LoadTemplate(Factory, factoryFuncFile, template.FactoryFunc)
+	if err != nil {
+		return "", err
+	}
+
+	output, err := util.With("insert").
+		Parse(text).
+		Execute(map[string]interface{}{
+			//"upperStartCamelObject": table.Name.ToCamel(),
+			//"upperStartModelObject": table.Name.ToCamel(),
+			"upperStartCamelObject": fmt.Sprintf("%s%s",UpdateUpper(pkg),"Dao"),
+			"fields":                fieldsString,
+		})
+	if err != nil {
+		return "", err
+	}
+
+	return output.String(), nil
+}
+

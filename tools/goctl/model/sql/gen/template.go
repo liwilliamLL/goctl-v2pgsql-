@@ -30,6 +30,13 @@ const (
 	updateMethodTemplateFile              = "interface-update.tpl"
 	varTemplateFile                       = "var.tpl"
 	errTemplateFile                       = "err.tpl"
+	Factory								  = "factory"
+	factoryImportsFile                    = "factory-import.tpl"
+	factoryTypesFile                      = "factory-types.tpl"
+	factoryFiledsfile                     = "factory-filed.tpl"
+	factoryFuncFile                       = "factory-func.tpl"
+	factoryFuncFiledFile                  = "factory-funcfile.tpl"
+	factoryFile                           = "factory.tpl"
 )
 
 var templates = map[string]string{
