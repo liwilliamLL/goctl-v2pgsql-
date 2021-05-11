@@ -7,7 +7,7 @@ import (
 	"github.com/go-xorm/builder"
 )
 
-const dbTag = "db"
+const dbTag = "gorm"
 
 // NewEq wraps builder.Eq
 func NewEq(in interface{}) builder.Eq {

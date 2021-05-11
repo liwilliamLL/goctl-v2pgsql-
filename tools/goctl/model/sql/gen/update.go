@@ -35,6 +35,7 @@ func genUpdate(table Table, withCache bool) (string, string, error) {
 
 	expressionValues = append(expressionValues, "data."+table.PrimaryKey.Name.ToCamel())
 	camelTableName := table.Name.ToCamel()
+	//log.Println("camelTableName",camelTableName)
 	text, err := util.LoadTemplate(category, updateTemplateFile, template.Update)
 	if err != nil {
 		return "", "", err
@@ -47,9 +48,10 @@ func genUpdate(table Table, withCache bool) (string, string, error) {
 			"upperStartCamelObject": camelTableName,
 			"keys":                  strings.Join(keySet.KeysStr(), "\n"),
 			"keyValues":             strings.Join(keyVariableSet.KeysStr(), ", "),
+			"dataType":                  table.PrimaryKey.DataType,
 			"primaryCacheKey":       table.PrimaryCacheKey.DataKeyExpression,
 			"primaryKeyVariable":    table.PrimaryCacheKey.KeyLeft,
-			"lowerStartCamelObject": stringx.From(camelTableName).Untitle(),
+			"lowerStartCamelPrimaryKey": stringx.From(table.PrimaryKey.Name.ToCamel()).Untitle(),
 			"originalPrimaryKey":    wrapWithRawString(table.PrimaryKey.Name.Source()),
 			"expressionValues":      strings.Join(expressionValues, ", "),
 		})

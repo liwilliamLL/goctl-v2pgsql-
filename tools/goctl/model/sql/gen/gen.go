@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -140,10 +141,10 @@ func (g *defaultGenerator) createFile(modelList map[string]string) error {
 
 		name := modelFilename + ".go"
 		filename := filepath.Join(dirAbs, name)
-		if util.FileExists(filename) {
-			g.Warning("%s already exists, ignored.", name)
-			continue
-		}
+		//if util.FileExists(filename) {
+		//	g.Warning("%s already exists, ignored.", name)
+		//	continue
+		//}
 		err = ioutil.WriteFile(filename, []byte(code), os.ModePerm)
 		if err != nil {
 			return err
@@ -211,6 +212,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 
 	importsCode, err := genImports(withCache, in.ContainsTime())
 	if err != nil {
+		log.Println("genImports err",err)
 		return "", err
 	}
 
@@ -222,33 +224,39 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 
 	varsCode, err := genVars(table, withCache)
 	if err != nil {
+		log.Println("genVars err",err)
 		return "", err
 	}
 
 	insertCode, insertCodeMethod, err := genInsert(table, withCache)
 	if err != nil {
+		log.Println("genInsert err",err)
 		return "", err
 	}
 
 	findCode := make([]string, 0)
 	findOneCode, findOneCodeMethod, err := genFindOne(table, withCache)
 	if err != nil {
+		log.Println("genFindOne err",err)
 		return "", err
 	}
 
 	ret, err := genFindOneByField(table, withCache)
 	if err != nil {
+		log.Println("genFindOneByField err",err)
 		return "", err
 	}
 
 	findCode = append(findCode, findOneCode, ret.findOneMethod)
 	updateCode, updateCodeMethod, err := genUpdate(table, withCache)
 	if err != nil {
+		log.Println("genUpdate err",err)
 		return "", err
 	}
 
 	deleteCode, deleteCodeMethod, err := genDelete(table, withCache)
 	if err != nil {
+		log.Println("genDelete err",err)
 		return "", err
 	}
 
@@ -256,11 +264,13 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 	list = append(list, insertCodeMethod, findOneCodeMethod, ret.findOneInterfaceMethod, updateCodeMethod, deleteCodeMethod)
 	typesCode, err := genTypes(table, strings.Join(modelutil.TrimStringSlice(list), util.NL), withCache)
 	if err != nil {
+		log.Println("genTypes err",err)
 		return "", err
 	}
 
 	newCode, err := genNew(table, withCache)
 	if err != nil {
+		log.Println("genNew err",err)
 		return "", err
 	}
 
@@ -275,9 +285,10 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 		deleteCode:  deleteCode,
 		cacheExtra:  ret.cacheExtra,
 	}
-
+	//log.Println(code)
 	output, err := g.executeModel(code)
 	if err != nil {
+		log.Println("executeModel err",err)
 		return "", err
 	}
 
@@ -287,6 +298,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 func (g *defaultGenerator) executeModel(code *code) (*bytes.Buffer, error) {
 	text, err := util.LoadTemplate(category, modelTemplateFile, template.Model)
 	if err != nil {
+		log.Println("LoadTemplate err",err)
 		return nil, err
 	}
 	t := util.With("model").

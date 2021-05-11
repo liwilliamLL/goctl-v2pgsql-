@@ -142,6 +142,7 @@ func fromDataSource(url, pattern, dir string, cfg *config.Config, cache, idea bo
 			return err
 		}
 
+
 		matchTables[item] = table
 	}
 
