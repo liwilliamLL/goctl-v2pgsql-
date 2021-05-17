@@ -20,6 +20,10 @@ func (t ArrayType) Name() string {
 	return t.RawName
 }
 
+func (t OriginType) Name() string {
+	return t.RawName
+}
+
 // Name returns a pointer string, such as *User
 func (t PointerType) Name() string {
 	return t.RawName

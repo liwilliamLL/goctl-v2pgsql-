@@ -74,25 +74,69 @@ func genTypes(dir string, cfg *config.Config, api *spec.ApiSpec) error {
 }
 
 func writeType(writer io.Writer, tp spec.Type) error {
-	structType, ok := tp.(spec.DefineStruct)
-	if !ok {
+
+	switch v := tp.(type) {
+	case spec.MapType:
+		fmt.Fprintf(writer, "type %s map[%s]interface{}\n", util.Title(tp.Name()), v.Key)
+		return nil
+	case spec.ArrayType:
+		fmt.Fprintf(writer, "type %s []%s\n", util.Title(tp.Name()), v.Value.Name())
+		return nil
+	case spec.OriginType:
+		fmt.Fprintf(writer, "type %s %s\n", util.Title(tp.Name()), v.Key)
+		return nil
+	case spec.DefineStruct:
+		fmt.Fprintf(writer, "type %s struct {\n", util.Title(tp.Name()))
+		for _, member := range v.Members {
+			if member.IsInline {
+				if _, err := fmt.Fprintf(writer, "%s\n", strings.Title(member.Type.Name())); err != nil {
+					return err
+				}
+
+				continue
+			}
+
+			if err := writeProperty(writer, member.Name, member.Tag, member.GetComment(), member.Type, 1); err != nil {
+				return err
+			}
+		}
+		fmt.Fprintf(writer, "}")
+		return nil
+	default:
 		return fmt.Errorf("unspport struct type: %s", tp.Name())
 	}
 
-	fmt.Fprintf(writer, "type %s struct {\n", util.Title(tp.Name()))
-	for _, member := range structType.Members {
-		if member.IsInline {
-			if _, err := fmt.Fprintf(writer, "%s\n", strings.Title(member.Type.Name())); err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		if err := writeProperty(writer, member.Name, member.Tag, member.GetComment(), member.Type, 1); err != nil {
-			return err
-		}
-	}
-	fmt.Fprintf(writer, "}")
+	//mapType, ok := tp.(spec.MapType)
+	//if ok {
+	//	fmt.Fprintf(writer, "type %s map[%s]interface{}\n", util.Title(tp.Name()), mapType.Key)
+	//	return nil
+	//}
+	//
+	//arrayType, ok := tp.(spec.ArrayType)
+	//if ok {
+	//	fmt.Fprintf(writer, "type %s []%s\n", util.Title(tp.Name()), arrayType.Value.Name())
+	//	return nil
+	//}
+	//
+	//structType, ok := tp.(spec.DefineStruct)
+	//if !ok {
+	//	return fmt.Errorf("unspport struct type: %s", tp.Name())
+	//}
+	//
+	//fmt.Fprintf(writer, "type %s struct {\n", util.Title(tp.Name()))
+	//for _, member := range structType.Members {
+	//	if member.IsInline {
+	//		if _, err := fmt.Fprintf(writer, "%s\n", strings.Title(member.Type.Name())); err != nil {
+	//			return err
+	//		}
+	//
+	//		continue
+	//	}
+	//
+	//	if err := writeProperty(writer, member.Name, member.Tag, member.GetComment(), member.Type, 1); err != nil {
+	//		return err
+	//	}
+	//}
+	//fmt.Fprintf(writer, "}")
 	return nil
 }

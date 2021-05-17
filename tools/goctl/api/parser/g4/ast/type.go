@@ -223,7 +223,7 @@ func (v *ApiVisitor) VisitTypeBlockAlias(ctx *api.TypeBlockAliasContext) interfa
 	alias.DocExpr = v.getDoc(ctx)
 	alias.CommentExpr = v.getComment(ctx)
 	// todo: reopen if necessary
-	v.panic(alias.Name, "unsupported alias")
+	//v.panic(alias.Name, "unsupported alias")
 	return &alias
 }
 
@@ -236,7 +236,7 @@ func (v *ApiVisitor) VisitTypeAlias(ctx *api.TypeAliasContext) interface{} {
 	alias.DocExpr = v.getDoc(ctx)
 	alias.CommentExpr = v.getComment(ctx)
 	// todo: reopen if necessary
-	v.panic(alias.Name, "unsupported alias")
+	//v.panic(alias.Name, "unsupported alias")
 	return &alias
 }
 

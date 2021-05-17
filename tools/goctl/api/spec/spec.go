@@ -116,6 +116,11 @@ type (
 		Value   Type
 	}
 
+	OriginType struct {
+		RawName string
+		Key string
+	}
+
 	// InterfaceType describes a interface for api
 	InterfaceType struct {
 		RawName string

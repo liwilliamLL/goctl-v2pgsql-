@@ -101,6 +101,34 @@ func (p parser) fillTypes() error {
 				Members: members,
 				Docs:    p.stringExprs(v.Doc()),
 			})
+		case *ast.TypeAlias:
+			//var members []spec.Member
+			//fmt.Printf("%+v", v)
+
+			//switch x :=v.DataType.(type){
+			//case vspec.MapType:
+			//	break
+			//}
+
+			switch vv := (v.DataType).(type) {
+			case *ast.Array:
+				p.spec.Types = append(p.spec.Types, spec.ArrayType{
+					RawName: v.Name.Text(),
+					Value: p.astTypeToSpec(vv.Literal),
+				})
+			case *ast.Map:
+				p.spec.Types = append(p.spec.Types, spec.MapType{
+					RawName: v.Name.Text(),
+					Key: vv.Key.Text(),
+				})
+			//case *ast.TypeExpr:
+			default:
+				p.spec.Types = append(p.spec.Types, spec.OriginType{
+					RawName: v.Name.Text(),
+					Key: vv.Expr().Text(),
+				})
+			}
+
 		default:
 			return fmt.Errorf("unknown type %+v", v)
 		}
@@ -124,6 +152,13 @@ func (p parser) fillTypes() error {
 				members = append(members, member)
 			}
 			v.Members = members
+			types = append(types, v)
+		case spec.MapType:
+			types = append(types, v)
+		case spec.ArrayType:
+			types = append(types, v)
+		case spec.OriginType:
+			//v.RawName = "map[string]interface{}"
 			types = append(types, v)
 		default:
 			return fmt.Errorf("unknown type %+v", v)
@@ -316,17 +351,17 @@ func (p parser) fillRouteType(route *spec.Route) error {
 		}
 	}
 
-	if route.ResponseType != nil {
-		switch route.ResponseType.(type) {
-		case spec.DefineStruct:
-			tp, err := p.findDefinedType(route.ResponseType.Name())
-			if err != nil {
-				return err
-			}
-
-			route.ResponseType = *tp
-		}
-	}
+	//if route.ResponseType != nil {
+	//	switch route.ResponseType.(type) {
+	//	case spec.DefineStruct:
+	//		tp, err := p.findDefinedType(route.ResponseType.Name())
+	//		if err != nil {
+	//			return err
+	//		}
+	//
+	//		route.ResponseType = *tp
+	//	}
+	//}
 
 	return nil
 }
