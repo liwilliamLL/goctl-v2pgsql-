@@ -6,11 +6,16 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
 )
 
-func genFindOne(table Table, withCache bool) (string, string, error) {
+func genFindOne(table Table, withCache bool) (string, string,bool, error) {
+	var status bool
 	camel := table.Name.ToCamel()
 	text, err := util.LoadTemplate(category, findOneTemplateFile, template.FindOne)
 	if err != nil {
-		return "", "", err
+		return "", "",status, err
+	}
+
+	if table.PrimaryKey.DataType =="int64"||table.PrimaryKey.DataType == "int32" {
+		status=true
 	}
 
 	output, err := util.With("findOne").
@@ -25,14 +30,15 @@ func genFindOne(table Table, withCache bool) (string, string, error) {
 			"dataType":                  table.PrimaryKey.DataType,
 			"cacheKey":                  table.PrimaryCacheKey.KeyExpression,
 			"cacheKeyVariable":          table.PrimaryCacheKey.KeyLeft,
+			"status"  :                  status,
 		})
 	if err != nil {
-		return "", "", err
+		return "", "",status, err
 	}
 
 	text, err = util.LoadTemplate(category, findOneMethodTemplateFile, template.FindOneMethod)
 	if err != nil {
-		return "", "", err
+		return "", "",status, err
 	}
 
 	findOneMethod, err := util.With("findOneMethod").
@@ -44,8 +50,8 @@ func genFindOne(table Table, withCache bool) (string, string, error) {
 			"dataType":                  table.PrimaryKey.DataType,
 		})
 	if err != nil {
-		return "", "", err
+		return "", "",status, err
 	}
 
-	return output.String(), findOneMethod.String(), nil
+	return output.String(), findOneMethod.String(),status,nil
 }

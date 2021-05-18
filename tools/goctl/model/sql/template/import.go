@@ -17,7 +17,7 @@ var (
 `
 	FactoryImport =`import (
 	"erp-server/lib/provider/mysql"
-	"erp-server/src/dao/{{.pkg}}/model"
+	"erp-server/src/dao/{{.pkg}}/dto"
 )
 `
 

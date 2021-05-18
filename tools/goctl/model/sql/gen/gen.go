@@ -317,11 +317,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 
 	primaryKey, uniqueKey := genCacheKeys(in)
 
-	importsCode, err := genImports(withCache, in.ContainsTime())
-	if err != nil {
-		log.Println("genImports err",err)
-		return "", err
-	}
+
 
 	var table Table
 	table.Table = in
@@ -342,9 +338,15 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 	}
 
 	findCode := make([]string, 0)
-	findOneCode, findOneCodeMethod, err := genFindOne(table, withCache)
+	findOneCode, findOneCodeMethod,status, err := genFindOne(table, withCache)
 	if err != nil {
 		log.Println("genFindOne err",err)
+		return "", err
+	}
+
+	importsCode, err := genImports(withCache, in.ContainsTime(),status)
+	if err != nil {
+		log.Println("genImports err",err)
 		return "", err
 	}
 

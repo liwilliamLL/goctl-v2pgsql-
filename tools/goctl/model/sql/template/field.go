@@ -4,7 +4,7 @@ package template
 var Field = `{{.name}} {{.type}} {{.tag}} {{if .hasComment}}// {{.comment}}{{end}}`
 
 
-var FactoryFiled = `{{.name}}Model *model.{{.name}}Model`
+var FactoryFiled = `{{.name}}Model *dto.{{.name}}Model`
 
 
-var FactoryFuncFiled = `{{.name}}Model: model.New{{.name}}Model(dataSource) , `
+var FactoryFuncFiled = `{{.name}}Model: dto.New{{.name}}Model(dataSource) , `

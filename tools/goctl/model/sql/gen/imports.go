@@ -5,7 +5,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genImports(withCache, timeImport bool) (string, error) {
+func genImports(withCache, timeImport,status bool) (string, error) {
 	if withCache {
 		text, err := util.LoadTemplate(category, importsTemplateFile, template.Imports)
 		if err != nil {
@@ -14,6 +14,7 @@ func genImports(withCache, timeImport bool) (string, error) {
 
 		buffer, err := util.With("import").Parse(text).Execute(map[string]interface{}{
 			"time": timeImport,
+			"status":status,
 		})
 		if err != nil {
 			return "", err
@@ -29,6 +30,7 @@ func genImports(withCache, timeImport bool) (string, error) {
 
 	buffer, err := util.With("import").Parse(text).Execute(map[string]interface{}{
 		"time": timeImport,
+		"status":status,
 	})
 	if err != nil {
 		return "", err
