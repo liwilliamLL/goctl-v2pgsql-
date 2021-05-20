@@ -66,14 +66,40 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		return err
 	}
 
+	dirCtx, err := mkdir(projectCtx, proto, output, callo)
+	if err != nil {
+		return err
+	}
+
+	absSrc, err := filepath.Abs(src)
+	if err != nil {
+		return err
+	}
+
+	srcDir := filepath.Dir(absSrc)
 	for _, path := range protoImportPath {
 		for _, imp := range proto.Import {
-			src = fmt.Sprintf("%s/%s", path, imp.Import.Filename)
-			importProto, _ := p.Parse(src)
+			for _, src := range []string{
+				fmt.Sprintf("%s/%s", path, imp.Import.Filename),
+				fmt.Sprintf("%s/%s", srcDir, imp.Import.Filename),
+				imp.Import.Filename} {
+				importProto, _ := p.Parse(src)
+				if &importProto != nil && importProto.Message != nil {
 
-			if &importProto != nil {
-				for _, message := range importProto.Message {
-					proto.ImportMessage = append(proto.ImportMessage, message)
+					importProto.Name = imp.Import.Filename
+					if path != srcDir {
+						importProto.Src = absSrc
+					}
+
+					err = g.g.GenPb(dirCtx, protoImportPath, importProto, g.cfg)
+					if err != nil {
+						log.Println("err if GenPb")
+						return err
+					}
+
+					for _, message := range importProto.Message {
+						proto.ImportMessage = append(proto.ImportMessage, message)
+					}
 				}
 			}
 		}
@@ -102,11 +128,6 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 				proto.Message = append(proto.Message, *t)
 			}
 		}
-	}
-
-	dirCtx, err := mkdir(projectCtx, proto, output, callo)
-	if err != nil {
-		return err
 	}
 
 	err = g.g.GenEtc(dirCtx, proto, g.cfg)
@@ -168,7 +189,7 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 	return err
 }
 
-func searchMessage(t string, msgs []parser.Message) (msg *parser.Message){
+func searchMessage(t string, msgs []parser.Message) (msg *parser.Message) {
 
 	for _, m := range msgs {
 		if m.Name == t {
