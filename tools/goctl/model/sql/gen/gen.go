@@ -344,7 +344,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 		return "", err
 	}
 
-	importsCode, err := genImports(withCache, in.ContainsTime(),status)
+	importsCode, err := genImports(table, withCache, in.ContainsTime(),status)
 	if err != nil {
 		log.Println("genImports err",err)
 		return "", err
