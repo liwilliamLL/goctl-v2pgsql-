@@ -26,3 +26,5 @@
 **/client
 **/pbXX
 /api/
+/pb/
+/_tools/

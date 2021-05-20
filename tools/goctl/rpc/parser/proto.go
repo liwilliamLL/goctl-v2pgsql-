@@ -2,12 +2,13 @@ package parser
 
 // Proto describes a proto file,
 type Proto struct {
-	Src       string
-	Name      string
-	Package   Package
-	PbPackage string
-	GoPackage string
-	Import    []Import
-	Message   []Message
-	Service   Service
+	Src           string
+	Name          string
+	Package       Package
+	PbPackage     string
+	GoPackage     string
+	Import        []Import
+	Message       []Message
+	ImportMessage []Message
+	Service       Service
 }

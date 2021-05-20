@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"fmt"
+	proto2 "github.com/emicklei/proto"
 	"log"
 	"path/filepath"
 
@@ -64,6 +66,44 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		return err
 	}
 
+	for _, path := range protoImportPath {
+		for _, imp := range proto.Import {
+			src = fmt.Sprintf("%s/%s", path, imp.Import.Filename)
+			importProto, _ := p.Parse(src)
+
+			if &importProto != nil {
+				for _, message := range importProto.Message {
+					proto.ImportMessage = append(proto.ImportMessage, message)
+				}
+			}
+		}
+	}
+
+	for _, element := range proto.Service.Service.Elements {
+		rpc, ok := element.(*proto2.RPC)
+		if !ok {
+			continue
+		}
+
+		lt := searchMessage(rpc.RequestType, proto.Message)
+		if lt == nil {
+			// 在当前proto文件里没有找到左值，去import包里找
+			t := searchMessage(rpc.RequestType, proto.ImportMessage)
+			if t != nil {
+				proto.Message = append(proto.Message, *t)
+			}
+		}
+
+		rt := searchMessage(rpc.ReturnsType, proto.Message)
+		if rt == nil {
+			// 在当前proto文件里没有找到右值，去import包里找
+			t := searchMessage(rpc.ReturnsType, proto.ImportMessage)
+			if t != nil {
+				proto.Message = append(proto.Message, *t)
+			}
+		}
+	}
+
 	dirCtx, err := mkdir(projectCtx, proto, output, callo)
 	if err != nil {
 		return err
@@ -118,12 +158,22 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		return err
 	}
 
-	err = g.g.GenHttp(dirCtx,proto,g.cfg)
-	if err!=nil{
+	err = g.g.GenHttp(dirCtx, proto, g.cfg)
+	if err != nil {
 		log.Println("err if GenHttp")
 		return err
 	}
 	console.NewColorConsole().MarkDone()
 
 	return err
+}
+
+func searchMessage(t string, msgs []parser.Message) (msg *parser.Message){
+
+	for _, m := range msgs {
+		if m.Name == t {
+			return &m
+		}
+	}
+	return
 }
