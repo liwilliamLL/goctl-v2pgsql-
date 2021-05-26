@@ -50,6 +50,7 @@ type (
 	Table struct {
 		Db      string
 		Table   string
+		Comment string
 		Columns []*Column
 		// Primary key not included
 		UniqueIndex map[string][]*Column
@@ -65,6 +66,11 @@ type (
 		IndexType IndexType
 		Columns   []*Column
 	}
+
+	DBTable struct {
+		TABLE_NAME string
+		TABLE_COMMENT string
+	}
 )
 
 // NewInformationSchemaModel creates an instance for InformationSchemaModel
@@ -73,9 +79,9 @@ func NewInformationSchemaModel(conn sqlx.SqlConn) *InformationSchemaModel {
 }
 
 // GetAllTables selects all tables from TABLE_SCHEMA
-func (m *InformationSchemaModel) GetAllTables(database string) ([]string, error) {
-	query := `select TABLE_NAME from TABLES where TABLE_SCHEMA = ?`
-	var tables []string
+func (m *InformationSchemaModel) GetAllTables(database string) ([]*DBTable, error) {
+	query := `select TABLE_NAME, TABLE_COMMENT from TABLES where TABLE_SCHEMA = ?`
+	var tables []*DBTable
 	err := m.conn.QueryRows(&tables, query, database)
 	if err != nil {
 		return nil, err

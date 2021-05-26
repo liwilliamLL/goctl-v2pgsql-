@@ -19,14 +19,16 @@ import (
 )
 
 const (
-	flagSrc   = "src"
-	flagDir   = "dir"
+	flagSrc    = "src"
+	flagDir    = "dir"
 	flagOption = "o"
-	flagCache = "cache"
-	flagIdea  = "idea"
-	flagURL   = "url"
-	flagTable = "table"
-	flagStyle = "style"
+	flagCache  = "cache"
+	flagIdea   = "idea"
+	flagURL    = "url"
+	flagTable  = "table"
+	flagStyle  = "style"
+	flagProto  = "proto"
+	flagPPack  = "ppack"
 )
 
 var errNotMatched = errors.New("sql not matched")
@@ -38,12 +40,14 @@ func MysqlDDL(ctx *cli.Context) error {
 	cache := ctx.Bool(flagCache)
 	idea := ctx.Bool(flagIdea)
 	style := ctx.String(flagStyle)
+	proto := ctx.String(flagProto)
+	ppack := ctx.String(flagPPack)
 	cfg, err := config.NewConfig(style)
 	if err != nil {
 		return err
 	}
 
-	return fromDDl(src, dir, cfg, cache, idea)
+	return fromDDl(src, dir, proto, ppack, cfg, cache, idea)
 }
 
 // MyDataSource generates model code from datasource
@@ -54,16 +58,18 @@ func MyDataSource(ctx *cli.Context) error {
 	cache := ctx.Bool(flagCache)
 	idea := ctx.Bool(flagIdea)
 	style := ctx.String(flagStyle)
+	proto := ctx.String(flagProto)
+	ppack := ctx.String(flagPPack)
 	pattern := strings.TrimSpace(ctx.String(flagTable))
 	cfg, err := config.NewConfig(style)
 	if err != nil {
 		return err
 	}
 
-	return fromDataSource(url, pattern, dir,option, cfg, cache, idea)
+	return fromDataSource(url, pattern, dir, proto, ppack, option, cfg, cache, idea)
 }
 
-func fromDDl(src, dir string, cfg *config.Config, cache, idea bool) error {
+func fromDDl(src, dir, proto, ppack string, cfg *config.Config, cache, idea bool) error {
 	log := console.NewConsole(idea)
 	src = strings.TrimSpace(src)
 	if len(src) == 0 {
@@ -89,7 +95,7 @@ func fromDDl(src, dir string, cfg *config.Config, cache, idea bool) error {
 		source = append(source, string(data))
 	}
 
-	generator, err := gen.NewDefaultGenerator(dir, cfg, gen.WithConsoleOption(log))
+	generator, err := gen.NewDefaultGenerator(dir, proto, ppack, cfg, gen.WithConsoleOption(log))
 	if err != nil {
 		return err
 	}
@@ -97,7 +103,7 @@ func fromDDl(src, dir string, cfg *config.Config, cache, idea bool) error {
 	return generator.StartFromDDL(strings.Join(source, "\n"), cache)
 }
 
-func fromDataSource(url, pattern, dir,option string, cfg *config.Config, cache, idea bool) error {
+func fromDataSource(url, pattern, dir, proto, ppack, option string, cfg *config.Config, cache, idea bool) error {
 	log := console.NewConsole(idea)
 	if len(url) == 0 {
 		log.Error("%v", "expected data source of mysql, but nothing found")
@@ -126,7 +132,7 @@ func fromDataSource(url, pattern, dir,option string, cfg *config.Config, cache, 
 
 	matchTables := make(map[string]*model.Table)
 	for _, item := range tables {
-		match, err := filepath.Match(pattern, item)
+		match, err := filepath.Match(pattern, item.TABLE_NAME)
 		if err != nil {
 			return err
 		}
@@ -135,7 +141,7 @@ func fromDataSource(url, pattern, dir,option string, cfg *config.Config, cache, 
 			continue
 		}
 
-		columnData, err := im.FindColumns(dsn.DBName, item)
+		columnData, err := im.FindColumns(dsn.DBName, item.TABLE_NAME)
 		if err != nil {
 			return err
 		}
@@ -146,28 +152,30 @@ func fromDataSource(url, pattern, dir,option string, cfg *config.Config, cache, 
 		}
 
 		//println(option)
-		matchTables[item] = table
-		for _,k:=range matchTables {
-			table, err := parser.ConvertDataType(k)
-			if err != nil {
-				return err
-			}
-			println(table.Name.ToCamel())
-		}
+		table.Comment = item.TABLE_COMMENT
+		matchTables[item.TABLE_NAME] = table
 	}
 
 	if len(matchTables) == 0 {
 		return errors.New("no tables matched")
 	}
 
-	generator, err := gen.NewDefaultGenerator(dir, cfg, gen.WithConsoleOption(log))
+	for _, k := range matchTables {
+		table, err := parser.ConvertDataType(k)
+		if err != nil {
+			return err
+		}
+		println(table.Name.ToCamel())
+	}
+
+	generator, err := gen.NewDefaultGenerator(dir, proto, ppack, cfg, gen.WithConsoleOption(log))
 	if err != nil {
 		return err
 	}
-	gens ,err := gen.NewDefaultGenerator(option,cfg,gen.WithConsoleOption(log))
+	gens, err := gen.NewDefaultGenerator(option, proto, ppack, cfg, gen.WithConsoleOption(log))
 	if err != nil {
 		return err
 	}
-	err = gens.GenFactory(option,matchTables)
+	err = gens.GenFactory(option, matchTables)
 	return generator.StartFromInformationSchema(matchTables, cache)
 }

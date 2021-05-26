@@ -19,6 +19,7 @@ type (
 	// Table describes a mysql table
 	Table struct {
 		Name        stringx.String
+		Comment     stringx.String
 		PrimaryKey  Primary
 		UniqueIndex map[string][]*Field
 		NormalIndex map[string][]*Field
@@ -275,6 +276,7 @@ func ConvertDataType(table *model.Table) (*Table, error) {
 	reply.UniqueIndex = map[string][]*Field{}
 	reply.NormalIndex = map[string][]*Field{}
 	reply.Name = stringx.From(table.Table)
+	reply.Comment = stringx.From(table.Comment)
 	seqInIndex := 0
 	if table.PrimaryKey.Index != nil {
 		seqInIndex = table.PrimaryKey.Index.SeqInIndex

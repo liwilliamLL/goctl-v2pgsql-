@@ -424,6 +424,15 @@ var (
 									Name:  "o",
 									Usage: "设置父路径",
 								},
+								cli.StringFlag{
+									Name:  "proto, p",
+									Usage: "the proto dir",
+								},
+								cli.StringFlag{
+									Name:  "package, pack",
+									Usage: "the proto package",
+								},
+
 							},
 							Action: model.MysqlDDL,
 						},
@@ -458,6 +467,14 @@ var (
 								cli.StringFlag{
 									Name:  "o",
 									Usage: "设置父路径",
+								},
+								cli.StringFlag{
+									Name:  "proto, p",
+									Usage: "the proto dir",
+								},
+								cli.StringFlag{
+									Name:  "ppack",
+									Usage: "the proto package",
 								},
 							},
 							Action: model.MyDataSource,

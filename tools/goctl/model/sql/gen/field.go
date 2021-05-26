@@ -86,7 +86,7 @@ func genFactoryField(field *model.Table)(string, error){
 			//"type":       field.DataType,
 			//"tag":        tag,
 			//"hasComment": field.Comment != "",
-			//"comment":    field.Comment,
+			"comment":    field.Comment,
 		})
 	if err != nil {
 		return "", err

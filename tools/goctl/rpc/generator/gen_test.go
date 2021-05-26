@@ -41,7 +41,7 @@ func TestRpcGenerate(t *testing.T) {
 	defer func() {
 		_ = os.RemoveAll(srcDir)
 	}()
-	err = g.Generate("./test.proto", projectDir, []string{src})
+	err = g.Generate("./test.proto", projectDir, []string{src}, "", "")
 	assert.Nil(t, err)
 	_, err = execx.Run("go test "+projectName, projectDir)
 	if err != nil {
@@ -60,7 +60,7 @@ func TestRpcGenerate(t *testing.T) {
 	}
 
 	projectDir = filepath.Join(workDir, projectName)
-	err = g.Generate("./test.proto", projectDir, []string{src})
+	err = g.Generate("./test.proto", projectDir, []string{src}, "", "")
 	assert.Nil(t, err)
 	_, err = execx.Run("go test "+projectName, projectDir)
 	if err != nil {
@@ -70,7 +70,7 @@ func TestRpcGenerate(t *testing.T) {
 	}
 
 	// case not in go mod and go path
-	err = g.Generate("./test.proto", projectDir, []string{src})
+	err = g.Generate("./test.proto", projectDir, []string{src}, "", "")
 	assert.Nil(t, err)
 	_, err = execx.Run("go test "+projectName, projectDir)
 	if err != nil {

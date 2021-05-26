@@ -23,6 +23,7 @@ const (
 	insertTemplateFile                    = "insert.tpl"
 	insertTemplateMethodFile              = "interface-insert.tpl"
 	modelTemplateFile                     = "model.tpl"
+	protoTemplateFile                     = "proto.tpl"
 	modelNewTemplateFile                  = "model-new.tpl"
 	tagTemplateFile                       = "tag.tpl"
 	typesTemplateFile                     = "types.tpl"

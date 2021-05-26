@@ -13,6 +13,7 @@ require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/fatih/structtag v1.2.0
 	github.com/frankban/quicktest v1.7.2 // indirect
+	github.com/gin-gonic/gin v1.7.2
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-sql-driver/mysql v1.5.0

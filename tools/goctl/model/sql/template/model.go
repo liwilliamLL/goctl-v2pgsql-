@@ -2,6 +2,7 @@ package template
 
 // Model defines a template for model
 var Model = `package {{.pkg}}
+{{.comment}}
 {{.imports}}
 {{.vars}}
 {{.types}}
@@ -19,3 +20,5 @@ var Factory = `package {{.pkg}}
 {{.types}}
 {{.func}}
 `
+
+var Proto = ``

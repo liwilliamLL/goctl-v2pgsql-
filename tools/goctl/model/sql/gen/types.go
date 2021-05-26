@@ -7,7 +7,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genTypes(table Table, methods string, withCache bool) (string, error) {
+func genTypes(table Table, methods, comment string, withCache bool) (string, error) {
 	fields := table.Fields
 	fieldsString, err := genFields(fields)
 	if err != nil {
@@ -26,6 +26,7 @@ func genTypes(table Table, methods string, withCache bool) (string, error) {
 			"method":                methods,
 			"upperStartCamelObject": table.Name.ToCamel(),
 			"fields":                fieldsString,
+			"comment":               comment,
 		})
 	if err != nil {
 		return "", err
@@ -34,8 +35,7 @@ func genTypes(table Table, methods string, withCache bool) (string, error) {
 	return output.String(), nil
 }
 
-
-func genFactoryTypes(pkg string, table map[string]*model.Table)(string ,error){
+func genFactoryTypes(pkg string, table map[string]*model.Table) (string, error) {
 	//for _,k:=range table {
 	//	tables, err := parser.ConvertDataType(k)
 	//	if err != nil {
@@ -56,9 +56,9 @@ func genFactoryTypes(pkg string, table map[string]*model.Table)(string ,error){
 	output, err := util.With("types").
 		Parse(text).
 		Execute(map[string]interface{}{
-		    //"upperStartCamelObject": table.Name.ToCamel(),
+			//"upperStartCamelObject": table.Name.ToCamel(),
 			//"upperStartModelObject": table.Name.ToCamel(),
-			"upperStartCamelObject": fmt.Sprintf("%s%s",UpdateUpper(pkg),"Dao"),
+			"upperStartCamelObject": fmt.Sprintf("%s%s", UpdateUpper(pkg), "Dao"),
 			"fields":                fieldsString,
 		})
 	if err != nil {
@@ -68,10 +68,10 @@ func genFactoryTypes(pkg string, table map[string]*model.Table)(string ,error){
 	return output.String(), nil
 }
 
-func UpdateUpper(a string) string{
+func UpdateUpper(a string) string {
 	vv := []rune(a)
-	if len(vv)!=0&&vv[0] >= 97&&vv[0]<=132{
-		vv[0]=vv[0]-32
+	if len(vv) != 0 && vv[0] >= 97 && vv[0] <= 132 {
+		vv[0] = vv[0] - 32
 	}
 	return string(vv)
 }
