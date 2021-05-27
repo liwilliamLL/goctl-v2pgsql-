@@ -117,7 +117,7 @@ func (g *defaultGenerator) StartFromInformationSchema(tables map[string]*model.T
 			return err
 		}
 
-		if g.proto != "" {
+		if g.proto != "" && g.ppack != ""{
 			err = g.genProto(*table, withCache)
 			if err != nil {
 				return err
