@@ -48,7 +48,7 @@ func DoGenProject(apiFile, dir, style string) error {
 		return err
 	}
 
-	cfg, err := config.NewConfig(style)
+	cfg, err := config.NewConfig(style, false)
 	if err != nil {
 		return err
 	}

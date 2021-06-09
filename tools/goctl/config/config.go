@@ -22,14 +22,18 @@ type Config struct {
 	// Note: NamingFormat is based on snake or camel string
 	NamingFormat string `yaml:"namingFormat"`
 	Output string `yaml:"output"`
+	ExperimentalAllowProto3Optional bool `yaml:"experimentalAllowProto3Optional"`
 }
 
 // NewConfig creates an instance for Config
-func NewConfig(format string) (*Config, error) {
+func NewConfig(format string, experimental_allow_proto3_optional bool) (*Config, error) {
 	if len(format) == 0 {
 		format = DefaultFormat
 	}
-	cfg := &Config{NamingFormat: format}
+	cfg := &Config{
+		NamingFormat: format,
+		ExperimentalAllowProto3Optional: experimental_allow_proto3_optional,
+	}
 	err := validate(cfg)
 	return cfg, err
 }

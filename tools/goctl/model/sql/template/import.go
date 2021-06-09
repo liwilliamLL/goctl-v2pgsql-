@@ -16,8 +16,8 @@ var (
 )
 `
 	FactoryImport =`import (
-	"erp-server/lib/provider/mysql"
-	"erp-server/src/dao/{{.pkg}}/dto"
+	"git.orderc.vip/base/gozero-base/provider/mysql"
+	"dao.erp/{{.pkg}}/dto"
 )
 `
 

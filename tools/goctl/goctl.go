@@ -383,6 +383,10 @@ var (
 							Name:  "idea",
 							Usage: "whether the command execution environment is from idea plugin. [optional]",
 						},
+						cli.BoolFlag{
+							Name:  "experimental_allow_proto3_optional",
+							Usage: "this option enables the use of optional in proto3 for explicit field presence. [optional]",
+						},
 					},
 					Action: rpc.RPC,
 				},
@@ -432,7 +436,6 @@ var (
 									Name:  "package, pack",
 									Usage: "the proto package",
 								},
-
 							},
 							Action: model.MysqlDDL,
 						},

@@ -20,8 +20,8 @@ type RPCGenerator struct {
 }
 
 // NewDefaultRPCGenerator wraps Generator with configure
-func NewDefaultRPCGenerator(style string) (*RPCGenerator, error) {
-	cfg, err := conf.NewConfig(style)
+func NewDefaultRPCGenerator(style string, experimental_allow_proto3_optional bool) (*RPCGenerator, error) {
+	cfg, err := conf.NewConfig(style, experimental_allow_proto3_optional)
 	if err != nil {
 		return nil, err
 	}

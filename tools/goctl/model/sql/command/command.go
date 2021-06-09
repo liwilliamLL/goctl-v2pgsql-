@@ -42,7 +42,7 @@ func MysqlDDL(ctx *cli.Context) error {
 	style := ctx.String(flagStyle)
 	proto := ctx.String(flagProto)
 	ppack := ctx.String(flagPPack)
-	cfg, err := config.NewConfig(style)
+	cfg, err := config.NewConfig(style, false)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func MyDataSource(ctx *cli.Context) error {
 	proto := ctx.String(flagProto)
 	ppack := ctx.String(flagPPack)
 	pattern := strings.TrimSpace(ctx.String(flagTable))
-	cfg, err := config.NewConfig(style)
+	cfg, err := config.NewConfig(style, false)
 	if err != nil {
 		return err
 	}

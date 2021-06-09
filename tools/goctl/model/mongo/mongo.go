@@ -20,7 +20,7 @@ func Action(ctx *cli.Context) error {
 		return errors.New("missing type")
 	}
 
-	cfg, err := config.NewConfig(s)
+	cfg, err := config.NewConfig(s, false)
 	if err != nil {
 		return err
 	}

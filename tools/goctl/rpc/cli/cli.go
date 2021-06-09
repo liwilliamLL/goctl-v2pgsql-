@@ -19,6 +19,9 @@ func RPC(c *cli.Context) error {
 	output := c.String("output")
 	callo := c.String("callo")
 	protoImportPath := c.StringSlice("proto_path")
+	experimental_allow_proto3_optional := c.Bool("experimental_allow_proto3_optional")
+
+	fmt.Println(experimental_allow_proto3_optional)
 
 	if len(src) == 0 {
 		return errors.New("missing -src")
@@ -27,7 +30,7 @@ func RPC(c *cli.Context) error {
 		return errors.New("missing -dir")
 	}
 
-	g, err := generator.NewDefaultRPCGenerator(style)
+	g, err := generator.NewDefaultRPCGenerator(style, experimental_allow_proto3_optional)
 	if err != nil {
 		return err
 	}
@@ -57,7 +60,7 @@ func RPCNew(c *cli.Context) error {
 		return err
 	}
 
-	g, err := generator.NewDefaultRPCGenerator(style)
+	g, err := generator.NewDefaultRPCGenerator(style, false)
 	if err != nil {
 		return err
 	}

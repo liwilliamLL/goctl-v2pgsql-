@@ -480,13 +480,14 @@ func (g *defaultGenerator) genProto(in parser.Table, withCache bool) error {
 	var table Table
 	table.Table = in
 
-	messageDetail := make([]map[string]string, 0)
+	messageDetail := make([]map[string]interface{}, 0)
 	for i, field := range table.Fields {
-		messageDetail = append(messageDetail, map[string]string{
+		messageDetail = append(messageDetail, map[string]interface{}{
 			"TypeName": modelutil.DataType2ProtoType(field.DataType),
 			"AttrName": field.Name.ToSnake(),
 			"Comment":  field.Comment,
 			"Num":      fmt.Sprintf("%d", i+1),
+			"NotKey": table.PrimaryKey.Name.Lower() != field.Name.Lower(),
 		})
 	}
 
