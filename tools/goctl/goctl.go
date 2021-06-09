@@ -387,6 +387,10 @@ var (
 							Name:  "experimental_allow_proto3_optional",
 							Usage: "this option enables the use of optional in proto3 for explicit field presence. [optional]",
 						},
+						cli.BoolFlag{
+							Name:  "only_client, OC",
+							Usage: "only create rpc client. [optional]",
+						},
 					},
 					Action: rpc.RPC,
 				},

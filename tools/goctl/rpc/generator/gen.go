@@ -39,7 +39,8 @@ func NewRPCGenerator(g Generator, cfg *conf.Config) *RPCGenerator {
 // Generate generates an rpc service, through the proto file,
 // code storage directory, and proto import parameters to control
 // the source file and target location of the rpc service that needs to be generated
-func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, output, callo string, ) error {
+func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, output, callo string, only_client bool) error {
+
 	abs, err := filepath.Abs(target)
 	if err != nil {
 		return err
@@ -66,7 +67,7 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		return err
 	}
 
-	dirCtx, err := mkdir(projectCtx, proto, output, callo)
+	dirCtx, err := mkdir(projectCtx, !only_client, proto, output, callo)
 	if err != nil {
 		return err
 	}
@@ -130,46 +131,57 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		}
 	}
 
-	err = g.g.GenEtc(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenEtc")
-		return err
+	if !only_client {
+
+		err = g.g.GenEtc(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenEtc")
+			return err
+		}
+
+
+
+		err = g.g.GenConfig(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenConfig")
+			return err
+		}
+
+		err = g.g.GenSvc(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenSvc")
+
+			return err
+		}
+
+		err = g.g.GenLogic(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenLogic")
+			return err
+		}
+
+		err = g.g.GenServer(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenServer")
+			return err
+		}
+
+		err = g.g.GenMain(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenMain")
+			return err
+		}
+
+		err = g.g.GenHttp(dirCtx, proto, g.cfg)
+		if err != nil {
+			log.Println("err if GenHttp")
+			return err
+		}
 	}
 
 	err = g.g.GenPb(dirCtx, protoImportPath, proto, g.cfg)
 	if err != nil {
 		log.Println("err if GenPb")
-		return err
-	}
-
-	err = g.g.GenConfig(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenConfig")
-		return err
-	}
-
-	err = g.g.GenSvc(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenSvc")
-
-		return err
-	}
-
-	err = g.g.GenLogic(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenLogic")
-		return err
-	}
-
-	err = g.g.GenServer(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenServer")
-		return err
-	}
-
-	err = g.g.GenMain(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenMain")
 		return err
 	}
 
@@ -179,11 +191,6 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 		return err
 	}
 
-	err = g.g.GenHttp(dirCtx, proto, g.cfg)
-	if err != nil {
-		log.Println("err if GenHttp")
-		return err
-	}
 	console.NewColorConsole().MarkDone()
 
 	return err
