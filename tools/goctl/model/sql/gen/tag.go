@@ -5,7 +5,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genTag(in string) (string, error) {
+func genTag(in string, isPrimaryKey bool) (string, error) {
 	if in == "" {
 		return in, nil
 	}
@@ -17,6 +17,7 @@ func genTag(in string) (string, error) {
 
 	output, err := util.With("tag").Parse(text).Execute(map[string]interface{}{
 		"field": in,
+		"isPrimaryKey": isPrimaryKey,
 	})
 	if err != nil {
 		return "", err

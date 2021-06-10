@@ -9,7 +9,7 @@ import (
 
 func genTypes(table Table, methods, comment string, withCache bool) (string, error) {
 	fields := table.Fields
-	fieldsString, err := genFields(fields)
+	fieldsString, err := genFields(fields, &table.PrimaryKey.Field)
 	if err != nil {
 		return "", err
 	}

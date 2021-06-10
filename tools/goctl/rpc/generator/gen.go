@@ -139,8 +139,6 @@ func (g *RPCGenerator) Generate(src, target string, protoImportPath []string, ou
 			return err
 		}
 
-
-
 		err = g.g.GenConfig(dirCtx, proto, g.cfg)
 		if err != nil {
 			log.Println("err if GenConfig")

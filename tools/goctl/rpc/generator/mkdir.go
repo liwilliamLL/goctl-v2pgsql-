@@ -134,9 +134,11 @@ func mkdir(ctx *ctx.ProjectContext, fmkdir bool, proto parser.Proto, output, cal
 			}
 		}
 	} else {
-		err := util.MkdirIfNotExist(inner[call].Filename)
-		if err != nil {
-			return nil, err
+		for _, x := range []string{pb, call} {
+			err := util.MkdirIfNotExist(inner[x].Filename)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
