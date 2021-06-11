@@ -13,6 +13,7 @@ func genFields(fields []*parser.Field) (string, error) {
 	var list []string
 
 	for _, field := range fields {
+
 		result, err := genField(field)
 		if err != nil {
 			return "", err
@@ -25,6 +26,11 @@ func genFields(fields []*parser.Field) (string, error) {
 }
 
 func genField(field *parser.Field) (string, error) {
+	name := field.Name.ToCamel()
+	typeName := field.DataType
+	if name == "DeletedAt"{
+		typeName = "gorm.D"
+	}
 	tag, err := genTag(field.Name.Source())
 	if err != nil {
 		return "", err
