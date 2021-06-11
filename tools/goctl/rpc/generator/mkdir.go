@@ -52,7 +52,7 @@ type (
 	}
 )
 
-func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output, callo string) (DirContext, error) {
+func mkdir(ctx *ctx.ProjectContext, fmkdir bool, proto parser.Proto, output, callo string) (DirContext, error) {
 	inner := make(map[string]Dir)
 	etcDir := filepath.Join(ctx.WorkDir, "etc")
 	internalDir := filepath.Join(ctx.WorkDir, "internal")
@@ -64,7 +64,7 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output, callo string) (D
 	pbDir := filepath.Join(ctx.WorkDir, proto.GoPackage)
 	callDir := filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name).ToCamel()))
 	if strings.ToLower(proto.Service.Name) == strings.ToLower(proto.GoPackage) {
-		callDir = filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name + "_client").ToCamel()))
+		callDir = filepath.Join(ctx.WorkDir, strings.ToLower(stringx.From(proto.Service.Name+"_client").ToCamel()))
 	}
 
 	if output != "" {
@@ -125,12 +125,23 @@ func mkdir(ctx *ctx.ProjectContext, proto parser.Proto, output, callo string) (D
 		Package:  filepath.ToSlash(filepath.Join(ctx.Path, strings.TrimPrefix(callDir, ctx.Dir))),
 		Base:     filepath.Base(callDir),
 	}
-	for _, v := range inner {
-		err := util.MkdirIfNotExist(v.Filename)
-		if err != nil {
-			return nil, err
+
+	if fmkdir {
+		for _, v := range inner {
+			err := util.MkdirIfNotExist(v.Filename)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		for _, x := range []string{pb, call} {
+			err := util.MkdirIfNotExist(inner[x].Filename)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
+
 	serviceName := strings.TrimSuffix(proto.Name, filepath.Ext(proto.Name))
 	return &defaultDirContext{
 		inner:       inner,

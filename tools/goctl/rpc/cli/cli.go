@@ -18,6 +18,7 @@ func RPC(c *cli.Context) error {
 	style := c.String("style")
 	output := c.String("output")
 	callo := c.String("callo")
+	only_client := c.Bool("only_client")
 	protoImportPath := c.StringSlice("proto_path")
 	experimental_allow_proto3_optional := c.Bool("experimental_allow_proto3_optional")
 
@@ -35,7 +36,7 @@ func RPC(c *cli.Context) error {
 		return err
 	}
 
-	return g.Generate(src, out, protoImportPath, output, callo)
+	return g.Generate(src, out, protoImportPath, output, callo, only_client)
 }
 
 // RPCNew is to generate rpc greet service, this greet service can speed
@@ -65,7 +66,7 @@ func RPCNew(c *cli.Context) error {
 		return err
 	}
 
-	return g.Generate(src, filepath.Dir(src), nil, "", "")
+	return g.Generate(src, filepath.Dir(src), nil, "", "", false)
 }
 
 // RPCTemplate is the entry for generate rpc template

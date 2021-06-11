@@ -9,12 +9,11 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genFields(fields []*parser.Field) (string, error) {
+func genFields(fields []*parser.Field, primaryKey *parser.Field) (string, error) {
 	var list []string
 
 	for _, field := range fields {
-
-		result, err := genField(field)
+		result, err := genField(field, primaryKey)
 		if err != nil {
 			return "", err
 		}
@@ -22,16 +21,17 @@ func genFields(fields []*parser.Field) (string, error) {
 		list = append(list, result)
 	}
 
+
 	return strings.Join(list, "\n"), nil
 }
 
-func genField(field *parser.Field) (string, error) {
+func genField(field *parser.Field, primaryKey *parser.Field) (string, error) {
+	tag, err := genTag(field.Name.Source(), primaryKey.Name == field.Name)
 	name := field.Name.ToCamel()
 	typeName := field.DataType
-	if name == "DeletedAt"{
-		typeName = "gorm.D"
+	if name == "DeletedAt" {
+		typeName = "gorm.DeletedAt"
 	}
-	tag, err := genTag(field.Name.Source())
 	if err != nil {
 		return "", err
 	}
@@ -45,7 +45,7 @@ func genField(field *parser.Field) (string, error) {
 		Parse(text).
 		Execute(map[string]interface{}{
 			"name":       field.Name.ToCamel(),
-			"type":       field.DataType,
+			"type":       typeName,
 			"tag":        tag,
 			"hasComment": field.Comment != "",
 			"comment":    field.Comment,
@@ -57,7 +57,7 @@ func genField(field *parser.Field) (string, error) {
 	return output.String(), nil
 }
 
-func genFactoryFields(fields map[string]*model.Table)(string ,error){
+func genFactoryFields(fields map[string]*model.Table) (string, error) {
 	var list []string
 
 	for _, field := range fields {
@@ -72,8 +72,7 @@ func genFactoryFields(fields map[string]*model.Table)(string ,error){
 	return strings.Join(list, "\n"), nil
 }
 
-
-func genFactoryField(field *model.Table)(string, error){
+func genFactoryField(field *model.Table) (string, error) {
 	text, err := util.LoadTemplate(Factory, factoryFiledsfile, template.FactoryFiled)
 	if err != nil {
 		return "", err
@@ -88,11 +87,11 @@ func genFactoryField(field *model.Table)(string, error){
 	output, err := util.With("types").
 		Parse(text).
 		Execute(map[string]interface{}{
-			"name":       list.Name.ToCamel(),
+			"name": list.Name.ToCamel(),
 			//"type":       field.DataType,
 			//"tag":        tag,
 			//"hasComment": field.Comment != "",
-			"comment":    field.Comment,
+			"comment": field.Comment,
 		})
 	if err != nil {
 		return "", err
@@ -102,9 +101,7 @@ func genFactoryField(field *model.Table)(string, error){
 
 }
 
-
-
-func genFactoryFuncFields(fields map[string]*model.Table)(string ,error){
+func genFactoryFuncFields(fields map[string]*model.Table) (string, error) {
 	var list []string
 
 	for _, field := range fields {
@@ -119,8 +116,7 @@ func genFactoryFuncFields(fields map[string]*model.Table)(string ,error){
 	return strings.Join(list, "\n"), nil
 }
 
-
-func genFactoryFuncField(field *model.Table)(string, error){
+func genFactoryFuncField(field *model.Table) (string, error) {
 	text, err := util.LoadTemplate(Factory, factoryFuncFiledFile, template.FactoryFuncFiled)
 	if err != nil {
 		return "", err
@@ -135,7 +131,7 @@ func genFactoryFuncField(field *model.Table)(string, error){
 	output, err := util.With("types").
 		Parse(text).
 		Execute(map[string]interface{}{
-			"name":       list.Name.ToCamel(),
+			"name": list.Name.ToCamel(),
 			//"type":       field.DataType,
 			//"tag":        tag,
 			//"hasComment": field.Comment != "",
