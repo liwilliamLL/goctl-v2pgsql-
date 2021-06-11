@@ -12,16 +12,18 @@ func genImports(table Table, withCache, timeImport, status bool) (string, error)
 	var importGorm bool
 
 	for _, f := range table.Fields {
-		if strings.Index(f.DataType, "sql.") != -1&&f.Name.ToCamel()!="DeletedAt" {
+		if strings.Index(f.DataType, "sql.") != -1 && f.Name.ToCamel() != "DeletedAt" {
 			sql = true
-			break
-		}
-		if f.Name.ToCamel()=="DeletedAt" {
-			importGorm =true
 			break
 		}
 	}
 
+	for _, f := range table.Fields {
+		if f.Name.ToCamel() == "DeletedAt" {
+			importGorm = true
+			break
+		}
+	}
 
 	if withCache {
 		text, err := util.LoadTemplate(category, importsTemplateFile, template.Imports)
