@@ -1,4 +1,4 @@
-module github.com/tal-tech/go-zero
+module github.com/liwilliamLL/goctl-v2pgsql-
 
 go 1.14
 
