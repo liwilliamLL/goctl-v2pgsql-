@@ -344,6 +344,16 @@ type Table struct {
 	ContainsUniqueCacheKey bool
 }
 
+
+// Table defines mysql table
+type PgTable struct {
+	parser.Table
+	PrimaryCacheKey        Key
+	UniqueCacheKey         []Key
+	ContainsUniqueCacheKey bool
+}
+
+
 func (g *defaultGenerator) GenPgFactory(option string, tables map[string]*model.PgTable) error {
 	dirAbs, err := filepath.Abs(g.dir)
 	if err != nil {
@@ -382,17 +392,17 @@ func (g *defaultGenerator) GenPgFactory(option string, tables map[string]*model.
 }
 
 func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, error) {
-	if len(in.PrimaryKey.Name.Source()) == 0 {
-		return "", fmt.Errorf("table %s: missing primary key", in.Name.Source())
-	}
+	//if len(in.PrimaryKey.Name.Source()) == 0 {
+	//	return "", fmt.Errorf("table %s: missing primary key", in.Name.Source())
+	//}
 
-	primaryKey, uniqueKey := genCacheKeys(in)
+	//primaryKey, uniqueKey := genCacheKeys(in)
 
-	var table Table
+	var table PgTable
 	table.Table = in
-	table.PrimaryCacheKey = primaryKey
-	table.UniqueCacheKey = uniqueKey
-	table.ContainsUniqueCacheKey = len(uniqueKey) > 0
+	//table.PrimaryCacheKey = primaryKey
+	//table.UniqueCacheKey = uniqueKey
+	//table.ContainsUniqueCacheKey = len(uniqueKey) > 0
 
 	varsCode, err := genVars(table, withCache)
 	if err != nil {
@@ -426,22 +436,22 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 	}
 
 	findCode = append(findCode, findOneCode, ret.findOneMethod)
-	updateCode, updateCodeMethod, err := genUpdate(table, withCache)
-	if err != nil {
-		log.Println("genUpdate err", err)
-		return "", err
-	}
-
-	deleteCode, deleteCodeMethod, err := genDelete(table, withCache)
-	if err != nil {
-		log.Println("genDelete err", err)
-		return "", err
-	}
+	//updateCode, updateCodeMethod, err := genUpdate(table, withCache)
+	//if err != nil {
+	//	log.Println("genUpdate err", err)
+	//	return "", err
+	//}
+	//
+	//deleteCode, deleteCodeMethod, err := genDelete(table, withCache)
+	//if err != nil {
+	//	log.Println("genDelete err", err)
+	//	return "", err
+	//}
 
 	//protoCode,
 
 	var list []string
-	list = append(list, insertCodeMethod, findOneCodeMethod, ret.findOneInterfaceMethod, updateCodeMethod, deleteCodeMethod)
+	list = append(list, insertCodeMethod, findOneCodeMethod, ret.findOneInterfaceMethod)
 	typesCode, err := genTypes(table, strings.Join(modelutil.TrimStringSlice(list), util.NL), table.Comment.Source(), withCache)
 	if err != nil {
 		log.Println("genTypes err", err)
@@ -461,9 +471,9 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 		newCode:     newCode,
 		insertCode:  insertCode,
 		findCode:    findCode,
-		updateCode:  updateCode,
-		deleteCode:  deleteCode,
-		cacheExtra:  ret.cacheExtra,
+		//updateCode:  updateCode,
+		//deleteCode:  deleteCode,
+		//cacheExtra:  ret.cacheExtra,
 	}
 	//log.Println(code)
 	output, err := g.executeModel(code)

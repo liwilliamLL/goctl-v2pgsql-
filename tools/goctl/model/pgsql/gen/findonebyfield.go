@@ -15,7 +15,7 @@ type findOneCode struct {
 	cacheExtra             string
 }
 
-func genFindOneByField(table Table, withCache bool) (*findOneCode, error) {
+func genFindOneByField(table PgTable, withCache bool) (*findOneCode, error) {
 	text, err := util.LoadTemplate(category, findOneByFieldTemplateFile, template.FindOneByField)
 	if err != nil {
 		return nil, err

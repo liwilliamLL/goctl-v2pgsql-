@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 	"sort"
 
@@ -139,7 +138,8 @@ func (m *InformationSchemaModel) GetAllTables(database string) ([]*DBTable, erro
 
 // GetAllTables selects all tables from TABLE_SCHEMA
 func (m *InforPgmationSchemaModel) SGetAllTables(database string) ([]*PgClass, error) {
-	query := `select relname as TABLE_NAME,col_description(c.oid, 0) as  TABLE_COMMENT from pg_class c where relkind = 'r' and relname  like 'o_%' order by relname`
+	//query := `select relname as TABLE_NAME,col_description(c.oid, 0) as  TABLE_COMMENT from pg_class c where relkind = 'r' and relname  like 'o_%' order by relname`
+	query := `select relname as TABLE_NAME,col_description(c.oid, 0) as  TABLE_COMMENT from pg_class c where relkind = 'r' and relname  = 'o_account' order by relname`
 	tables:=[]*PgClass{}
 	err := m.conn.Raw(query).Find(&tables).Error
 	if err != nil {
@@ -162,26 +162,27 @@ func (m *InforPgmationSchemaModel) FindColumns(db, table string) (*PgColumnData,
 
 	var list []*PgColumn
 	for _, item := range reply {
-		index, err := m.FindIndex(db, table, item.Name)
-		if err != nil {
-			if err != sqlx.ErrNotFound {
-				return nil, err
-			}
-			continue
-		}
+		//index, err := m.FindIndex(db, table, item.Name)
+		//if err != nil {
+		//	if err != sqlx.ErrNotFound {
+		//		return nil, err
+		//	}
+		//	continue
+		//}
+		//
+		//if len(index) > 0 {
+		//	for _, i := range index {
+		//		list = append(list, &PgColumn{
+		//			PgDbColumn: item,
+		//			Index:    i,
+		//		})
+		//	}
+		//} else {
+		//	list = append(list, &PgColumn{
+		//		PgDbColumn: item,
+		//	})
+		//}
 
-		if len(index) > 0 {
-			for _, i := range index {
-				list = append(list, &PgColumn{
-					PgDbColumn: item,
-					Index:    i,
-				})
-			}
-		} else {
-			list = append(list, &PgColumn{
-				PgDbColumn: item,
-			})
-		}
 		list =append(list,&PgColumn{
 			PgDbColumn: item,
 		})
@@ -227,31 +228,31 @@ func (c *PgColumnData) Convert() (*PgTable, error) {
 		}
 	}
 
-	primaryColumns := m[indexPri]
-	if len(primaryColumns) == 0 {
-		return nil, fmt.Errorf("db:%s, table:%s, missing primary key", c.Db, c.Table)
-	}
+	//primaryColumns := m[indexPri]
+	//if len(primaryColumns) == 0 {
+	//	return nil, fmt.Errorf("db:%s, table:%s, missing primary key", c.Db, c.Table)
+	//}
+	//
+	//if len(primaryColumns) > 1 {
+	//	return nil, fmt.Errorf("db:%s, table:%s, joint primary key is not supported", c.Db, c.Table)
+	//}
 
-	if len(primaryColumns) > 1 {
-		return nil, fmt.Errorf("db:%s, table:%s, joint primary key is not supported", c.Db, c.Table)
-	}
-
-	table.PrimaryKey = primaryColumns[0]
-	for indexName, columns := range m {
-		if indexName == indexPri {
-			continue
-		}
-
-		for _, one := range columns {
-			if one.Index != nil {
-				if one.Index.NonUnique == 0 {
-					table.UniqueIndex[indexName] = columns
-				} else {
-					table.NormalIndex[indexName] = columns
-				}
-			}
-		}
-	}
+	//table.PrimaryKey = primaryColumns[0]
+	//for indexName, columns := range m {
+	//	if indexName == indexPri {
+	//		continue
+	//	}
+	//
+	//	for _, one := range columns {
+	//		if one.Index != nil {
+	//			if one.Index.NonUnique == 0 {
+	//				table.UniqueIndex[indexName] = columns
+	//			} else {
+	//				table.NormalIndex[indexName] = columns
+	//			}
+	//		}
+	//	}
+	//}
 
 	return &table, nil
 }

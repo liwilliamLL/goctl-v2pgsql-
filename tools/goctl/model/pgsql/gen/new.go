@@ -5,7 +5,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genNew(table Table, withCache bool) (string, error) {
+func genNew(table PgTable, withCache bool) (string, error) {
 	text, err := util.LoadTemplate(category, modelNewTemplateFile, template.New)
 	if err != nil {
 		return "", err

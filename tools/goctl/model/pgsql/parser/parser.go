@@ -267,33 +267,33 @@ func (t *Table) ContainsTime() bool {
 
 // ConvertPgDataType converts mysql data type into golang data type
 func ConvertPgDataType(table *model.PgTable) (*Table, error) {
-	isPrimaryDefaultNull := table.PrimaryKey.ColumnDefault == nil && table.PrimaryKey.IsNullAble == "YES"
-	primaryDataType, err := converter.ConvertDataType(table.PrimaryKey.DataType, isPrimaryDefaultNull)
-	if err != nil {
-		return nil, err
-	}
+	//isPrimaryDefaultNull := table.PrimaryKey.ColumnDefault == nil && table.PrimaryKey.IsNullAble == "YES"
+	//primaryDataType, err := converter.ConvertDataType(table.PrimaryKey.DataType, true)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	var reply Table
 	reply.UniqueIndex = map[string][]*Field{}
 	reply.NormalIndex = map[string][]*Field{}
 	reply.Name = stringx.From(table.Table)
 	reply.Comment = stringx.From(table.Comment)
-	seqInIndex := 0
-	if table.PrimaryKey.Index != nil {
-		seqInIndex = table.PrimaryKey.Index.SeqInIndex
-	}
+	//seqInIndex := 0
+	//if table.PrimaryKey.Index != nil {
+	//	seqInIndex = table.PrimaryKey.Index.SeqInIndex
+	//}
 
-	reply.PrimaryKey = Primary{
-		Field: Field{
-			Name:            stringx.From(table.PrimaryKey.Name),
-			DataBaseType:    table.PrimaryKey.DataType,
-			DataType:        primaryDataType,
-			Comment:         table.PrimaryKey.Comment,
-			SeqInIndex:      seqInIndex,
-			OrdinalPosition: table.PrimaryKey.OrdinalPosition,
-		},
-		AutoIncrement: strings.Contains(table.PrimaryKey.Extra, "auto_increment"),
-	}
+	//reply.PrimaryKey = Primary{
+	//	Field: Field{
+	//		Name:            stringx.From(table.PrimaryKey.Name),
+	//		DataBaseType:    table.PrimaryKey.DataType,
+	//		//DataType:        primaryDataType,
+	//		Comment:         table.PrimaryKey.Comment,
+	//		SeqInIndex:      seqInIndex,
+	//		OrdinalPosition: table.PrimaryKey.OrdinalPosition,
+	//	},
+	//	AutoIncrement: strings.Contains(table.PrimaryKey.Extra, "auto_increment"),
+	//}
 
 	fieldM, err := getPgTableFields(table)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util"
 )
 
-func genTypes(table Table, methods, comment string, withCache bool) (string, error) {
+func genTypes(table PgTable, methods, comment string, withCache bool) (string, error) {
 	fields := table.Fields
 	fieldsString, err := genFields(fields, &table.PrimaryKey.Field)
 	if err != nil {

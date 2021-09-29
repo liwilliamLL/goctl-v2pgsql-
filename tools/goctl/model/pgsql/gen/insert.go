@@ -11,7 +11,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
 )
 
-func genInsert(table Table, withCache bool) (string, string, error) {
+func genInsert(table PgTable, withCache bool) (string, string, error) {
 	keySet := collection.NewSet()
 	keyVariableSet := collection.NewSet()
 	for _, key := range table.UniqueCacheKey {

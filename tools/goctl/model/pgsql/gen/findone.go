@@ -6,7 +6,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
 )
 
-func genFindOne(table Table, withCache bool) (string, string,bool, error) {
+func genFindOne(table PgTable, withCache bool) (string, string,bool, error) {
 	var status bool
 	camel := table.Name.ToCamel()
 	text, err := util.LoadTemplate(category, findOneTemplateFile, template.FindOne)

@@ -9,7 +9,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
 )
 
-func genDelete(table Table, withCache bool) (string, string, error) {
+func genDelete(table PgTable, withCache bool) (string, string, error) {
 	keySet := collection.NewSet()
 	keyVariableSet := collection.NewSet()
 	keySet.AddStr(table.PrimaryCacheKey.KeyExpression)

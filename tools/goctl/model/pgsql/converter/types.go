@@ -37,6 +37,9 @@ var commonMysqlDataTypeMap = map[string]string{
 	"enum":       "string",
 	"set":        "string",
 	"json":       "string",
+	"character varying":   "string",
+	"real":       "float32",
+
 }
 
 // ConvertDataType converts mysql column type into golang type

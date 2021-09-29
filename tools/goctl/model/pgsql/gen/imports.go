@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func genImports(table Table, withCache, timeImport, status bool) (string, error) {
+func genImports(table PgTable, withCache, timeImport, status bool) (string, error) {
 
 	sql, importGorm := false, false
 

@@ -8,7 +8,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
 )
 
-func genVars(table Table, withCache bool) (string, error) {
+func genVars(table PgTable, withCache bool) (string, error) {
 	keys := make([]string, 0)
 	keys = append(keys, table.PrimaryCacheKey.VarExpression)
 	for _, v := range table.UniqueCacheKey {
