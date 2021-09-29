@@ -20,6 +20,7 @@ import (
 	"github.com/tal-tech/go-zero/tools/goctl/docker"
 	"github.com/tal-tech/go-zero/tools/goctl/kube"
 	"github.com/tal-tech/go-zero/tools/goctl/model/mongo"
+	models "github.com/tal-tech/go-zero/tools/goctl/model/pgsql/command"
 	model "github.com/tal-tech/go-zero/tools/goctl/model/sql/command"
 	"github.com/tal-tech/go-zero/tools/goctl/plugin"
 	rpc "github.com/tal-tech/go-zero/tools/goctl/rpc/cli"
@@ -510,6 +511,94 @@ var (
 						},
 					},
 					Action: mongo.Action,
+				},
+				{
+					Name:  "postgres",
+					Usage: `generate postgres model`,
+					Subcommands: []cli.Command{
+						{
+							Name:  "ddl",
+							Usage: `generate postgres model from ddl`,
+							Flags: []cli.Flag{
+								cli.StringFlag{
+									Name:  "src, s",
+									Usage: "the path or path globbing patterns of the ddl",
+								},
+								cli.StringFlag{
+									Name:  "dir, d",
+									Usage: "the target dir",
+								},
+								cli.StringFlag{
+									Name:  "style",
+									Usage: "the file naming format, see [https://github.com/tal-tech/go-zero/tree/master/tools/goctl/config/readme.md]",
+								},
+								cli.BoolFlag{
+									Name:  "cache, c",
+									Usage: "generate code with cache [optional]",
+								},
+								cli.BoolFlag{
+									Name:  "idea",
+									Usage: "for idea plugin [optional]",
+								},
+								cli.StringFlag{
+									Name:  "o",
+									Usage: "设置父路径",
+								},
+								cli.StringFlag{
+									Name:  "proto, p",
+									Usage: "the proto dir",
+								},
+								cli.StringFlag{
+									Name:  "package, pack",
+									Usage: "the proto package",
+								},
+							},
+							Action: models.PGDDL,
+						},
+						{
+							Name:  "datasource",
+							Usage: `generate model from datasource`,
+							Flags: []cli.Flag{
+								cli.StringFlag{
+									Name:  "url",
+									Usage: `the data source of database,like "root:password@tcp(127.0.0.1:3306)/database`,
+								},
+								cli.StringFlag{
+									Name:  "table, t",
+									Usage: `the table or table globbing patterns in the database`,
+								},
+								cli.BoolFlag{
+									Name:  "cache, c",
+									Usage: "generate code with cache [optional]",
+								},
+								cli.StringFlag{
+									Name:  "dir, d",
+									Usage: "the target dir",
+								},
+								cli.StringFlag{
+									Name:  "style",
+									Usage: "the file naming format, see [https://github.com/tal-tech/go-zero/tree/master/tools/goctl/config/readme.md]",
+								},
+								cli.BoolFlag{
+									Name:  "idea",
+									Usage: "for idea plugin [optional]",
+								},
+								cli.StringFlag{
+									Name:  "o",
+									Usage: "设置父路径",
+								},
+								cli.StringFlag{
+									Name:  "proto, p",
+									Usage: "the proto dir",
+								},
+								cli.StringFlag{
+									Name:  "ppack",
+									Usage: "the proto package",
+								},
+							},
+							Action: models.MyDataSource,
+						},
+					},
 				},
 			},
 		},
